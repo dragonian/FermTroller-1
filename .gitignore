@@ -1,0 +1,32 @@
+# DS_Store files
+.DS_Store
+
+# Compiled Object files
+*.o
+
+# Compiled Static libraries
+*.a
+
+# CLion files
+.idea
+.iml
+
+# Build directory
+build/*
+
+# CMake Files
+Config.h
+CMakeCache.txt
+CMakeFiles/*
+cmake_install.cmake
+lib/CMakeFiles/*
+Makefile
+lib/Makefile
+src/CMakeFiles/*
+src/Makefile
+src/cmake_install.cmake
+
+# Image Files
+*.hex
+*.elf
+*.map
