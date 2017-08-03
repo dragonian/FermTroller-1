@@ -15,7 +15,7 @@ set(MCU_SPEED "16000000UL")
 include(avr_toolchain.cmake)
 
 # Older versions of CMake (< 3) require the toolchain file to be included before the project definition
-project(BrewTroller)
+project(FermTroller)
 
 # Set Compiler flags
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -mcall-prologues -fno-inline-small-functions -fno-split-wide-types -fshort-enums -Wall -funsigned-char -funsigned-bitfields -ffunction-sections -fdata-sections -Os")
@@ -39,15 +39,3 @@ include_directories(lib/arduino
 add_subdirectory(lib)
 add_subdirectory(src)
 
-if(EXISTS "rgbio.json")
-    message(STATUS "Auto-generating RGBIO config")
-    execute_process(COMMAND python json2mako.py -j rgbio.json -t templates/rgbio.template -o src/Com_RGBIO8_Config.h
-                    ERROR_VARIABLE rgb_stderr
-                    RESULT_VARIABLE rgb_result_var
-                    ERROR_STRIP_TRAILING_WHITESPACE)
-    if (NOT "${rgb_result_var}" STREQUAL "0")
-        message(FATAL_ERROR "${rgb_stderr}")
-    else()
-        add_definitions("-DGENERATED_RGBIO_CONFIG")
-    endif()
-endif()
