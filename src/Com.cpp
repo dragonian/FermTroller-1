@@ -41,6 +41,7 @@ void printFieldPS(const char* sText);
 void updateI2CBTnic();
 void updateS0BTnic();
 void updateS0ASCII();
+void btnicRX(int numBytes);
 
 
 //**********************************************************************************
@@ -54,9 +55,9 @@ void comInit() {
     if (logData)
       logASCIIVersion();
   #endif
-//  #ifdef BTNIC_EMBEDDED
-//    Wire.onReceive(btnicRX);
-//  #endif
+  #ifdef BTNIC_EMBEDDED
+    Wire.onReceive(btnicRX);
+  #endif
   
 }
 
