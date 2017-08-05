@@ -29,6 +29,9 @@ Documentation, Forums and more information available at http://www.brewtroller.c
 #include "Enum.h"
 #include "HWProfile.h"
 #include "PVOut.h"
+#include "FermTroller.h"
+#include "Outputs.h"
+#include "Events.h"
 
 // set what the PID cycle time should be based on how fast the temp sensors will respond
 #if TS_ONEWIRE_RES == 12

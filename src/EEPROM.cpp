@@ -28,12 +28,15 @@ Documentation, Forums and more information available at http://www.brewtroller.c
 #include "Enum.h"
 #include <avr/eeprom.h>
 #include <EEPROM.h>
+#include "FermTroller.h"  
+#include "EEPROM.h"
+#include "Outputs.h"
 
 void loadSetup() {
   //**********************************************************************************
   // TSensors: 8 bytes per zone (Reserve for 32 zones: 0-255)
   //**********************************************************************************
-  PROMreadBytes(0, *tSensor, NUM_ZONES * 8);
+  EEPROMreadBytes(0, *tSensor, NUM_ZONES * 8);
  
  
   //**********************************************************************************
@@ -69,7 +72,7 @@ void loadSetup() {
     //********************************************************************************
     // Setpoints: 2 Bytes per zone (640-703)
     //********************************************************************************
-    setpoint[zone] = PROMreadInt(640 + zone * 2);
+    setpoint[zone] = EEPROMreadInt(640 + zone * 2);
   }
   
   //**********************************************************************************
@@ -91,7 +94,7 @@ void loadVlvConfigs() {
 //**********************************************************************************
 void setTSAddr(byte zone, byte addr[8]) {
   memcpy(tSensor[zone], addr, 8);
-  PROMwriteBytes(zone * 8, addr, 8);
+  EEPROMwriteBytes(zone * 8, addr, 8);
 }
 
 
@@ -148,7 +151,7 @@ void setCoolMinOff(byte zone, byte value) {
 //**********************************************************************************
 void setSetpoint(byte zone, int value) {
   setpoint[zone] = value;
-  PROMwriteInt(640 + zone * 2, value);
+  EEPROMwriteInt(640 + zone * 2, value);
 }
 
 //*****************************************************************************************************************************
@@ -156,7 +159,7 @@ void setSetpoint(byte zone, int value) {
 //*****************************************************************************************************************************
 void setValveCfg(byte profile, unsigned long value) {
   vlvConfig[profile] = value;
-  PROMwriteLong(705 + profile * 4, value);
+  EEPROMwriteLong(705 + profile * 4, value);
 }
 
 //*****************************************************************************************************************************
@@ -258,33 +261,33 @@ void initEEPROM() {
 //*****************************************************************************************************************************
 // EEPROM Type Read/Write Functions
 //*****************************************************************************************************************************
-long PROMreadLong(int address) {
+long EEPROMreadLong(int address) {
   long out;
   eeprom_read_block((void *) &out, (unsigned char *) address, 4);
   return out;
 }
 
-void PROMwriteLong(int address, long value) {
+void EEPROMwriteLong(int address, long value) {
   eeprom_write_block((void *) &value, (unsigned char *) address, 4);
 }
 
-int PROMreadInt(int address) {
+int EEPROMreadInt(int address) {
   int out;
   eeprom_read_block((void *) &out, (unsigned char *) address, 2);
   return out;
 }
 
-void PROMwriteInt(int address, int value) {
+void EEPROMwriteInt(int address, int value) {
   eeprom_write_block((void *) &value, (unsigned char *) address, 2);
 }
 
-void PROMwriteBytes(int addr, byte bytes[], byte numBytes) {
+void EEPROMwriteBytes(int addr, byte bytes[], byte numBytes) {
   for (byte i = 0; i < numBytes; i++) {
     EEPROM.write(addr + i, bytes[i]);
   }
 }
 
-void PROMreadBytes(int addr, byte bytes[], byte numBytes) {
+void EEPROMreadBytes(int addr, byte bytes[], byte numBytes) {
   for (byte i = 0; i < numBytes; i++) {
     bytes[i] = EEPROM.read(addr + i);
   }

@@ -1,4 +1,3 @@
-#define BUILD 2
 /*  
   Copyright (C) 2009, 2010 Matt Reba, Jeremiah Dillingham
 
@@ -52,34 +51,20 @@ Compiled on Arduino-0022 (http://arduino.cc/en/Main/Software)
 #include "PVOut.h"
 #include "UI_LCD.h"
 
-void(* softReset) (void) = 0;
+#include "FermTroller.h"
+#include "FermCore.h"
+#include "EEPROM.h"
+#include "Outputs.h"
+#include "Com.h"
+#include "UI.h" 
+
+
+const void(* softReset) (void) = 0;
+
 
 //**********************************************************************************
 // Compile Time Logic
 //**********************************************************************************
-
-#ifndef NUM_ZONES
-  #define NUM_ZONES PVOUT_COUNT
-#endif
-
-#define NUM_VLVCFGS NUM_ZONES * 2 + 1 //Per zone Heat and Cool + Global Alarm
-
-#ifdef USEMETRIC
-  #define SETPOINT_MULT 50
-  #define SETPOINT_DIV 2
-#else
-  #define SETPOINT_MULT 100
-  #define SETPOINT_DIV 1
-#endif
-
-#if COM_SERIAL0 == BTNIC || defined BTNIC_EMBEDDED
-  #define BTNIC_PROTOCOL
-#endif
-
-#if defined BTPD_SUPPORT || defined UI_LCD_I2C || defined TS_ONEWIRE_I2C || defined BTNIC_EMBEDDED
-  #define USE_I2C
-#endif
-
 #ifdef USE_I2C
   #include <Wire.h>
 #endif
@@ -269,3 +254,18 @@ void loop() {
   fermCore();
 }
 
+
+
+int main(void)
+{
+    init();
+
+    setup();
+
+    for (;;) {
+        loop();
+        if (serialEventRun) serialEventRun();
+    }
+
+    return 0;
+}

@@ -1,5 +1,37 @@
-#ifndef BT_CONFIGURATION
-#define BT_CONFIGURATION
+/*
+ Copyright (C) 2015 BrewTroller
+
+ This file is part of BrewTroller.
+
+ BrewTroller is free software: you can redistribute it and/or modify
+ it under the terms of the GNU General Public License as published by
+ the Free Software Foundation, either version 3 of the License, or
+ (at your option) any later version.
+
+ BrewTroller is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU General Public License for more details.
+
+ You should have received a copy of the GNU General Public License
+ along with BrewTroller.  If not, see <http://www.gnu.org/licenses/>.
+
+
+ BrewTroller - Open Source Brewing Computer
+
+ Documentation, Forums and more information available at http://brewtroller.com
+ */
+#ifndef BrewTroller_Config_h
+#define BrewTroller_Config_h
+
+#include <stdint.h>
+#include "@ENUM_HEADER@"
+
+//*******************************
+//  BrewTroller Version
+//*******************************
+#define VER_STR "@VER_STR@"
+
 
 //*****************************************************************************************************************************
 // USER COMPILE OPTIONS
@@ -21,10 +53,8 @@
 //**********************************************************************************
 // UNIT (Metric/US)
 //**********************************************************************************
-// By default BrewTroller will use US Units
-// Uncomment USEMETRIC below to use metric instead
 //
-//#define USEMETRIC
+#cmakedefine USEMETRIC
 //**********************************************************************************
 
 //**********************************************************************************

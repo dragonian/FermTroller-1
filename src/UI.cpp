@@ -31,6 +31,13 @@ Documentation, Forums and more information available at http://www.brewtroller.c
 #include <encoder.h>
 #include "UI_LCD.h"
 
+#include "FermTroller.h"
+#include "Outputs.h"
+#include "EEPROM.h"
+#include "UI.h"
+#include "Util.h"
+#include "FermCore.h"
+
 //*****************************************************************************************************************************
 // Begin UI Code
 //*****************************************************************************************************************************
@@ -338,7 +345,7 @@ void screenAbout() {
   LCD.print_P(1, 4, BT);
   LCD.print_P(1, 16, BTVER);
   LCD.print_P(2, 4, PSTR("Build"));
-  LCD.lPad(2, 10, itoa(BUILD, buf, 10), 4, '0');
+  LCD.lPad(2, 10, itoa(BUILDNUM, buf, 10), 4, '0');
   LCD.print_P(3, 0, PSTR("www.brewtroller.com"));
   LCD.update();
 }
@@ -573,7 +580,7 @@ void cfgOutput(byte zone, char sTitle[]) {
 }
 
 
-unsigned long cfgValveProfile (char sTitle[], unsigned long defValue) {
+unsigned long cfgValveProfile (const char *sTitle, unsigned long defValue) {
   unsigned long retValue = defValue;
   //firstBit: The left most bit being displayed
   byte firstBit, encMax;
@@ -765,7 +772,7 @@ unsigned long cfgValveProfile (char sTitle[], unsigned long defValue) {
   Glues together menu, Encoder and LCD objects
 */
 
-byte scrollMenu(char sTitle[], menu *objMenu) {
+byte scrollMenu(const char* sTitle, menu *objMenu) {
   inMenu++;
   Encoder.setMin(0);
   Encoder.setMax(objMenu->getItemCount() - 1);
@@ -796,7 +803,7 @@ byte scrollMenu(char sTitle[], menu *objMenu) {
   }
 }
 
-void drawMenu(char sTitle[], menu *objMenu) {
+void drawMenu(const char* sTitle, menu *objMenu) {
   LCD.clear();
   if (sTitle != NULL) LCD.print(0, 0, sTitle);
 

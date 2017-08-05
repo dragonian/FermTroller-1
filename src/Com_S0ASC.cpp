@@ -30,9 +30,27 @@ Documentation, Forums and more information available at http://www.brewtroller.c
 #include "Enum.h"
 #include <avr/eeprom.h>
 #include <EEPROM.h>
+#include "FermTroller.h"  
+#include "EEPROM.h"
+#include "Outputs.h"
 
 #ifdef COM_SERIAL0
 #if COM_SERIAL0 == ASCII
+
+void sendOK();
+void rejectParam();
+void clearMsg();
+void logVersion();
+void clearMsg();
+void logOSet(byte);
+void logTSensor(byte);
+void logVlvConfig(byte);
+void logVersion();
+void logASCIIVersion();
+void getLog();
+void logAlarm(byte);
+
+
 
 //**********************************************************************************
 //Code for Schemas 0 & 1

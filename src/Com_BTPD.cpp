@@ -33,6 +33,7 @@ Documentation, Forums and more information available at http://www.brewtroller.c
 #ifdef BTPD_SUPPORT
 #include "Config.h"
 #include "Enum.h"
+#include "EEPROM.h"
 
 // BTPD_START: Starting address for BTPD data
 // BTPD support will use one address per zone
@@ -50,10 +51,10 @@ void updateBTPD() {
 
 void sendFloatsBTPD(byte chan, float line1, float line2) {
   Wire.beginTransmission(chan);
-  Wire.send(0xff);
-  Wire.send(0x00);
-  Wire.send((uint8_t *) &line1, 4);
-  Wire.send((uint8_t *) &line2, 4);
+  Wire.write(0xff);
+  Wire.write(0x00);
+  Wire.write((uint8_t *) &line1, 4);
+  Wire.write((uint8_t *) &line2, 4);
   Wire.endTransmission();
 }
 #endif

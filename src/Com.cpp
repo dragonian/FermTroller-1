@@ -25,11 +25,27 @@ Documentation, Forums and more information available at http://www.brewtroller.c
 
 */
 
+#include <Arduino.h>
+#include "HardwareProfile.h"
+#include "Enum.h"
+#include "Config.h"
+#include "FermTroller.h"
+#include "Com.h"
+
+
+//Function Forward Declarations
+
+void logASCIIVersion();
+void printFieldUL(unsigned long uLong);
+void printFieldPS(const char* sText);
+void updateI2CBTnic();
+void updateS0BTnic();
+void updateS0ASCII();
+
+
 //**********************************************************************************
 //Code Shared by all Schemas
 //**********************************************************************************
-#include "Config.h"
-#include "Enum.h"
 
 void comInit() {
   #ifdef COM_SERIAL0
@@ -38,9 +54,9 @@ void comInit() {
     if (logData)
       logASCIIVersion();
   #endif
-  #ifdef BTNIC_EMBEDDED
-    Wire.onReceive(btnicRX);
-  #endif
+//  #ifdef BTNIC_EMBEDDED
+//    Wire.onReceive(btnicRX);
+//  #endif
   
 }
 
@@ -49,7 +65,7 @@ void logASCIIVersion() {
   printFieldPS(LOGSYS);     // keyword "SYS"
   Serial.print("VER\t");  // Version record
   printFieldPS(BTVER);      // BT Version
-  printFieldUL(BUILD);      // Build #
+  printFieldUL(BUILDNUM);      // Build #
   #if COM_SERIAL0 == BTNIC || (COM_SERIAL0 == ASCII && COMSCHEMA > 0)
     printFieldUL(COM_SERIAL0);  // Protocol Type
     printFieldUL(COMSCHEMA);// Protocol Schema
@@ -102,9 +118,9 @@ void updateCom() {
         //TX Ready
         Wire.beginTransmission(BTNIC_I2C_ADDR);
         char timestamp[11];
-        Wire.send(ultoa(millis(), timestamp, 10));
-        Wire.send(0x09);
-        while(btnicI2C.getState() == BTNIC_STATE_TX) Wire.send(btnicI2C.tx());        
+        Wire.write(ultoa(millis(), timestamp, 10));
+        Wire.write(0x09);
+        while(btnicI2C.getState() == BTNIC_STATE_TX) Wire.write(btnicI2C.tx());
         Wire.endTransmission();
       }
     }
@@ -112,7 +128,7 @@ void updateCom() {
     void btnicRX(int numBytes) {
       if(btnicI2C.getState() == BTNIC_STATE_RX) {
         for (byte i = 0; i < numBytes; i++) {
-          btnicI2C.rx(Wire.receive());
+          btnicI2C.rx(Wire.read());
           if(btnicI2C.getState() != BTNIC_STATE_RX) break;
         }
       }

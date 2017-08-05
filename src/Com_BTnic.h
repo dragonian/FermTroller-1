@@ -30,6 +30,9 @@ Documentation, Forums and more information available at http://www.brewtroller.c
 #ifdef BTNIC_PROTOCOL
   #include "Config.h"
   #include "Enum.h"
+  #include "EEPROM.h"
+  #include "Outputs.h"
+
 
 /********************************************************************************************************************
  * BTnic Class
@@ -77,7 +80,7 @@ Documentation, Forums and more information available at http://www.brewtroller.c
   #define CMDCODE_MAX 119
   #define NO_CMDINDEX -1
   
-  static byte CMD_PARAM_COUNTS[] PROGMEM = 
+  static const byte CMD_PARAM_COUNTS[] PROGMEM = 
   {
     0,	//CMD_GET_OSET
     0,	  //Not Used
@@ -133,7 +136,7 @@ Documentation, Forums and more information available at http://www.brewtroller.c
     0 	//CMD_VLVPRF
   };
 
-  static byte CMD_INDEX_MAXVALUE[] PROGMEM = 
+  static const byte CMD_INDEX_MAXVALUE[] PROGMEM = 
   {
     NUM_ZONES * 2 - 1,	//CMD_GET_OSET
     0,   		  //Not Used
@@ -290,7 +293,7 @@ void BTnic::execCmd(void) {
     case CMD_GET_VER:  //G
       logFieldCmd(CMD_GET_VER, NO_CMDINDEX);
       logField_P(BTVER);
-      logFieldI(BUILD);
+      logFieldI(BUILDNUM);
       logFieldI(BTNIC);
       logFieldI(COMSCHEMA);
       #ifdef USEMETRIC

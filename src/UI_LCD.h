@@ -35,10 +35,7 @@ Documentation, Forums and more information available at http://www.brewtroller.c
   #include <stdlib.h> // for malloc and free
   #include <EEPROM.h>
 
-  void* operator new(size_t size) { return malloc(size); }
-  void operator delete(void* ptr) { free(ptr); }
-
-
+ 
   //*****************************************************************************************************************************
   // 4-Bit GPIO LCD Class
   //*****************************************************************************************************************************
@@ -82,7 +79,7 @@ Documentation, Forums and more information available at http://www.brewtroller.c
       
       void update() {}
       
-      void print(byte iRow, byte iCol, char sText[]){
+      void print(byte iRow, byte iCol, const char sText[]){
         _lcd->setCursor(iCol, iRow);
         #ifdef LCD_DELAY_CURSOR
           delayMicroseconds(LCD_DELAY_CURSOR);
@@ -109,7 +106,7 @@ Documentation, Forums and more information available at http://www.brewtroller.c
       
       void clear(){ _lcd->clear(); }
       
-      void center(byte iRow, byte iCol, char sText[], byte fieldWidth){
+      void center(byte iRow, byte iCol, const char sText[], byte fieldWidth){
         rPad(iRow, iCol, "", fieldWidth, ' ');
         if (strlen(sText) < fieldWidth) _lcd->setCursor(iCol + ((fieldWidth - strlen(sText)) / 2), iRow);
         else _lcd->setCursor(iCol, iRow);
@@ -127,7 +124,7 @@ Documentation, Forums and more information available at http://www.brewtroller.c
       
       } 
       
-      char lPad(byte iRow, byte iCol, char sText[], byte length, char pad) {
+      char lPad(byte iRow, byte iCol, const char sText[], byte length, const char pad) {
         _lcd->setCursor(iCol, iRow);
         #ifdef LCD_DELAY_CURSOR
           delayMicroseconds(LCD_DELAY_CURSOR);
@@ -151,7 +148,7 @@ Documentation, Forums and more information available at http://www.brewtroller.c
       
       }  
       
-      char rPad(byte iRow, byte iCol, char sText[], byte length, char pad) {
+      char rPad(byte iRow, byte iCol, const char sText[], byte length, const char pad) {
         _lcd->setCursor(iCol, iRow);
         #ifdef LCD_DELAY_CURSOR
           delayMicroseconds(LCD_DELAY_CURSOR);
@@ -262,13 +259,13 @@ Documentation, Forums and more information available at http://www.brewtroller.c
       
       void print(byte iRow, byte iCol, char sText[]){
         byte pos = iRow * 20 + iCol;
-        memcpy((byte*)&screen[pos], sText, min(strlen(sText), 80-pos));
+        memcpy((byte*)&screen[pos], sText, min(strlen(sText), uint8_t(80-pos)));
       }  
       
       //Version of PrintLCD reading from PROGMEM
       void print_P(byte iRow, byte iCol, const char *sText){
         byte pos = iRow * 20 + iCol;
-        memcpy_P((byte*)&screen[pos], sText, min(strlen_P(sText), 80-pos));
+        memcpy_P((byte*)&screen[pos], sText, min(strlen_P(sText), uint8_t(80-pos)));
       } 
       
       void clear() {
@@ -345,16 +342,16 @@ Documentation, Forums and more information available at http://www.brewtroller.c
 
       void i2cLcdBegin(byte iCols, byte iRows) {
         Wire.beginTransmission(i2cLCDAddr);
-        Wire.send(0x01);
-        Wire.send(iCols);
-        Wire.send(iRows);
+        Wire.write(0x01);
+        Wire.write(iCols);
+        Wire.write(iRows);
         Wire.endTransmission();
         delay(5);
       }
       
       void i2cLcdClear() {
         Wire.beginTransmission(i2cLCDAddr);
-        Wire.send(0x02);
+        Wire.write(0x02);
         Wire.endTransmission();
         delay(3);
       }
@@ -362,21 +359,21 @@ Documentation, Forums and more information available at http://www.brewtroller.c
       /*
       void i2cLcdSetCursor(byte iCol, byte iRow) {
         Wire.beginTransmission(I2CLCD_ADDR);
-        Wire.send(0x03);
-        Wire.send(iCol);
-        Wire.send(iRow);
+        Wire.write(0x03);
+        Wire.write(iCol);
+        Wire.write(iRow);
         Wire.endTransmission();
       }
       */
       
       void i2cLcdPrint(byte iCol, byte iRow, char s[]) {
         Wire.beginTransmission(i2cLCDAddr);
-        Wire.send(0x04);
-        Wire.send(iCol);
-        Wire.send(iRow);
+        Wire.write(0x04);
+        Wire.write(iCol);
+        Wire.write(iRow);
         char *p = s;
         while (*p) {
-          Wire.send(*p++);
+          Wire.write(*p++);
         }
         Wire.endTransmission();
         delay(3);
@@ -384,21 +381,21 @@ Documentation, Forums and more information available at http://www.brewtroller.c
       
       void i2cLcdWrite(byte iCol, byte iRow, byte len, char s[]) {
         Wire.beginTransmission(i2cLCDAddr);
-        Wire.send(0x14);
-        Wire.send(iCol);
-        Wire.send(iRow);
-        Wire.send(len);
-        for (byte i = 0; i < len; i++) Wire.send(s[i]);
+        Wire.write(0x14);
+        Wire.write(iCol);
+        Wire.write(iRow);
+        Wire.write(len);
+        for (byte i = 0; i < len; i++) Wire.write(s[i]);
         Wire.endTransmission();
         delay(3);
       }
       
       void i2cLcdSetCustChar_P(byte slot, const byte *charDef) {
         Wire.beginTransmission(i2cLCDAddr);
-        Wire.send(0x05);
-        Wire.send(slot);
+        Wire.write(0x05);
+        Wire.write(slot);
         for (byte i = 0; i < 8; i++) {
-          Wire.send(pgm_read_byte(charDef++));
+          Wire.write(pgm_read_byte(charDef++));
         }
         Wire.endTransmission();
         delay(5);
@@ -406,62 +403,62 @@ Documentation, Forums and more information available at http://www.brewtroller.c
       
       void i2cLcdWriteCustChar(byte iCol, byte iRow, byte c) {
         Wire.beginTransmission(i2cLCDAddr);
-        Wire.send(0x06);
-        Wire.send(iCol);
-        Wire.send(iRow);
-        Wire.send(c);
+        Wire.write(0x06);
+        Wire.write(iCol);
+        Wire.write(iRow);
+        Wire.write(c);
         Wire.endTransmission();
         delay(3);
       }
       
       void i2cSetBright(byte val) {
         Wire.beginTransmission(i2cLCDAddr);
-        Wire.send(0x07);
-        Wire.send(val);
+        Wire.write(0x07);
+        Wire.write(val);
         Wire.endTransmission();
         delay(3);
       }
       
       void i2cSetContrast(byte val) {
         Wire.beginTransmission(i2cLCDAddr);
-        Wire.send(0x08);
-        Wire.send(val);
+        Wire.write(0x08);
+        Wire.write(val);
         Wire.endTransmission();
         delay(3);
       }
       
       byte i2cGetBright(void) {
         Wire.beginTransmission(i2cLCDAddr);
-        Wire.send(0x09);
+        Wire.write(0x09);
         Wire.endTransmission();
         Wire.requestFrom((int)i2cLCDAddr, (int)1);
         while(Wire.available())
         {
-          return Wire.receive();
+          return Wire.read();
         }
       }
       
       byte i2cGetContrast(void) {
         Wire.beginTransmission(i2cLCDAddr);
-        Wire.send(0x0A);
+        Wire.write(0x0A);
         Wire.endTransmission();
         Wire.requestFrom((int)i2cLCDAddr, (int)1);
         while(Wire.available())
         {
-          return Wire.receive();
+          return Wire.read();
         }
       }
       
       byte i2cSaveConfig(void) {
         Wire.beginTransmission(i2cLCDAddr);
-        Wire.send(0x0B);
+        Wire.write(0x0B);
         Wire.endTransmission();
         delay(10);
       }
       
       byte i2cLoadConfig(void) {
         Wire.beginTransmission(i2cLCDAddr);
-        Wire.send(0x0C);
+        Wire.write(0x0C);
         Wire.endTransmission();
         delay(10);
       }

@@ -26,6 +26,7 @@ Documentation, Forums and more information available at http://www.brewtroller.c
 
 #include "Config.h"
 #include "Enum.h"
+#include "Util.h"
 
 void strLPad(char retString[], byte len, char pad) {
   char strVal[len + 1];

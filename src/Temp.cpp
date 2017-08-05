@@ -27,6 +27,8 @@ Documentation, Forums and more information available at http://www.brewtroller.c
 #include "Config.h"
 #include "Enum.h"
 #include "HWProfile.h"
+#include "Temp.h"
+#include "FermTroller.h"
 
 #ifdef TS_ONEWIRE
   unsigned long convStart;

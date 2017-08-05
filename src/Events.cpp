@@ -26,6 +26,11 @@ Documentation, Forums and more information available at http://www.brewtroller.c
 
 #include "Config.h"
 #include "Enum.h"
+#include "Events.h"
+#include "FermTroller.h"
+#include "EEPROM.h"
+#include "UI.h"
+#include "Com.h" 
 
 void eventHandler(byte eventID, int eventParam) {
   //Global Event handler
