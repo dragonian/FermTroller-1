@@ -89,21 +89,40 @@ void processOutputs() {
       eventHandler(EVENT_ALARM_TSENSOR, zone);
       zonePwr[zone] = 0;
     }
-    else {
+    else
+    {
+      // Check for alarms
       if (bitRead(alarmStatus[zone], ALARM_STATUS_TSENSOR)) eventHandler(EVENT_NALARM_TSENSOR, zone); //Clear TSENSOR Alarm
       
-      if (temp[zone] - setpoint[zone] >= alarmThresh[zone] * 10) {
+      if (temp[zone] - setpoint[zone] >= alarmThresh[zone] * 10)
+      {
        if (!bitRead(alarmStatus[zone], ALARM_STATUS_TEMPHOT)) eventHandler(EVENT_ALARM_TEMPHOT, zone);
       }
       else if (bitRead(alarmStatus[zone], ALARM_STATUS_TEMPHOT)) eventHandler(EVENT_NALARM_TEMPHOT, zone); //Clear TEMPHOT Alarm
   
-      if (setpoint[zone] - temp[zone] >= alarmThresh[zone] * 10) {
+      if (setpoint[zone] - temp[zone] >= alarmThresh[zone] * 10)
+      {
        if (!bitRead(alarmStatus[zone], ALARM_STATUS_TEMPCOLD)) eventHandler(EVENT_ALARM_TEMPCOLD, zone);
       }
       else if (bitRead(alarmStatus[zone], ALARM_STATUS_TEMPCOLD)) eventHandler(EVENT_NALARM_TEMPCOLD, zone); //Clear TEMPCOLD Alarm
       
+	    // check for output on & off
       if (zonePwr[zone] > 0 && temp[zone] >= setpoint[zone]) zonePwr[zone] = 0; //Turn off heat
-      else if(zonePwr[zone] < 0 && temp[zone] <= setpoint[zone]) {
+
+      // If we're cooling, and it's over the max time, we need to stop
+      else if(zonePwr[zone] < 0)
+      {
+       unsigned long now = millis();
+       if (now < coolTime[zone]) coolTime[zone] = 0; //Timer overflow occurred
+       if (now - coolTime[zone] >= (unsigned long) coolMaxOn[zone] * 60000) {
+        zonePwr[zone] = 0; //Turn off cool
+        coolTime[zone] = now; //Set timer for minimum off period
+       }
+      }
+
+      //If we're cooling, are we done, with temp and minimum time?
+      else if(zonePwr[zone] < 0 && temp[zone] <= setpoint[zone])
+      {
         //Check for minimum cool on period
         unsigned long now = millis();
         if (now < coolTime[zone]) coolTime[zone] = 0; //Timer overflow occurred
@@ -113,7 +132,9 @@ void processOutputs() {
         }
       }
       
-      if (temp[zone] >= setpoint[zone] + (int)hysteresis[zone] * 10) {
+      // The temp is too warm, should we turn cool on?
+      if (temp[zone] >= setpoint[zone] + (int)hysteresis[zone] * 10)
+      {
         //Check for minimum cool off period
         unsigned long now = millis();
         if (now < coolTime[zone]) coolTime[zone] = 0; //Timer overflow occurred
