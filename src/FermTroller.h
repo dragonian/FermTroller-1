@@ -80,6 +80,7 @@ extern boolean buzzStatus;
 extern byte alarmStatus[NUM_ZONES];
 extern unsigned long coolTime[NUM_ZONES];
 extern byte coolMinOn[NUM_ZONES], coolMinOff[NUM_ZONES]; //Minimum On/Off time for coolOutput in minutes
+extern byte coolMaxOn[NUM_ZONES]; // Maximum time for coolOutput
 
 
 #if defined PVOUT_TYPE_GPIO

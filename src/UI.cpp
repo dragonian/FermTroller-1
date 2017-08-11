@@ -558,6 +558,15 @@ void cfgOutput(byte zone, char sTitle[]) {
     strLPad(buf, 2, '0');
     outputMenu.appendItem(buf, 5);
 
+    outputMenu.setItem_P(PSTR("Max Cool On: "), 6);
+    hours = coolMaxOn[zone] / 60;
+    outputMenu.appendItem(itoa(hours, buf, 10), 6);
+    outputMenu.appendItem(":", 6);
+    mins = coolMaxOn[zone] - hours * 60;
+    itoa(mins, buf, 10);
+    strLPad(buf, 2, '0');
+    outputMenu.appendItem(buf, 6);
+
     outputMenu.setItem_P(EXIT, 255);
  
     byte lastOption = scrollMenu(sTitle, &outputMenu);
@@ -574,6 +583,7 @@ void cfgOutput(byte zone, char sTitle[]) {
     }
     else if (lastOption == 4) setCoolMinOn(zone, getTimerValue(PSTR("Min Cool On"), coolMinOn[zone], 4));
     else if (lastOption == 5) setCoolMinOff(zone, getTimerValue(PSTR("Min Cool Off"), coolMinOff[zone], 4));
+    else if (lastOption == 6) setCoolMaxOn(zone, getTimerValue(PSTR("Max Cool On"), coolMaxOn[zone], 4));
     else return;
     fermCore();
   } 

@@ -106,6 +106,7 @@ boolean buzzStatus;
 byte alarmStatus[NUM_ZONES];
 unsigned long coolTime[NUM_ZONES];
 byte coolMinOn[NUM_ZONES], coolMinOff[NUM_ZONES]; //Minimum On/Off time for coolOutput in minutes
+byte coolMaxOn[NUM_ZONES]; // Maximum time for coolOutput in 30 second increments
 
 //Create the appropriate 'Valves' object for the hardware configuration (GPIO, MUX, MODBUS)
 #if defined PVOUT_TYPE_GPIO
@@ -143,7 +144,7 @@ int zonePwr[NUM_ZONES];
 boolean logData = LOG_INITSTATUS;
 
 const char BT[] PROGMEM = "FermTroller";
-const char BTVER[] PROGMEM = "2.1";
+const char BTVER[] PROGMEM = "2.1+MaxCool";
 
 //Log Strings
 const char LOGCMD[] PROGMEM = "CMD";

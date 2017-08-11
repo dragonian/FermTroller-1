@@ -70,6 +70,11 @@ void loadSetup() {
     coolMinOff[zone] = EEPROM.read(384 + zone);
 
     //********************************************************************************
+    // Max Cool Output Active Period (416 - 447)
+    //********************************************************************************
+    coolMaxOn[zone] = EEPROM.read(416 + zone);
+
+    //********************************************************************************
     // Setpoints: 2 Bytes per zone (640-703)
     //********************************************************************************
     setpoint[zone] = EEPROMreadInt(640 + zone * 2);
@@ -140,6 +145,14 @@ void setCoolMinOn(byte zone, byte value) {
 void setCoolMinOff(byte zone, byte value) {
   coolMinOff[zone] = value;
   EEPROM.write(384 + zone, value);
+}
+
+//********************************************************************************
+// Max Cool Output Active Period (416 - 447)
+//********************************************************************************
+void setCoolMaxOn(byte zone, byte value) {
+  coolMaxOn[zone] = value;
+  EEPROM.write(416 + zone, value);
 }
 
 //*****************************************************************************************************************************
