@@ -113,7 +113,7 @@ void processOutputs() {
       if (zonePwr[zone] > 0 && temp[zone] >= setpoint[zone]) zonePwr[zone] = 0; //Turn off heat
 
       // If we're cooling, and it's over the max time, we need to stop
-      else if(zonePwr[zone] < 0)
+      else if(zonePwr[zone] < 0 && coolMaxOn[zone] != 0)
       {
        unsigned long now = millis();
        if (now < coolTime[zone]) coolTime[zone] = 0; //Timer overflow occurred
