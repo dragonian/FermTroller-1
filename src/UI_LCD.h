@@ -86,7 +86,7 @@ Documentation, Forums and more information available at http://www.brewtroller.c
         #endif
         int i = 0;
         while (sText[i] != 0)  {
-          _lcd->print(sText[i++]);
+          _lcd->write(sText[i++]);
           #ifdef LCD_DELAY_CHAR
             delayMicroseconds(LCD_DELAY_CHAR);
           #endif
@@ -97,7 +97,7 @@ Documentation, Forums and more information available at http://www.brewtroller.c
       void print_P(byte iRow, byte iCol, const char *sText){
         _lcd->setCursor(iCol, iRow);
         while (pgm_read_byte(sText) != 0) {
-          _lcd->print(pgm_read_byte(sText++)); 
+          _lcd->write(pgm_read_byte(sText++)); 
           #ifdef LCD_DELAY_CHAR
             delayMicroseconds(LCD_DELAY_CHAR);
           #endif
@@ -116,7 +116,7 @@ Documentation, Forums and more information available at http://www.brewtroller.c
       
         int i = 0;
         while (sText[i] != 0)  {
-          _lcd->print(sText[i++]);
+          _lcd->write(sText[i++]);
           #ifdef LCD_DELAY_CHAR
             delayMicroseconds(LCD_DELAY_CHAR);
           #endif
@@ -131,7 +131,7 @@ Documentation, Forums and more information available at http://www.brewtroller.c
         #endif
         if (strlen(sText) < length) {
           for (byte i=0; i < length-strlen(sText); i++) {
-            _lcd->print(pad);
+            _lcd->write(pad);
             #ifdef LCD_DELAY_CHAR
               delayMicroseconds(LCD_DELAY_CHAR);
             #endif
@@ -140,7 +140,7 @@ Documentation, Forums and more information available at http://www.brewtroller.c
         
         int i = 0;
         while (sText[i] != 0)  {
-          _lcd->print(sText[i++]);
+          _lcd->write(sText[i++]);
           #ifdef LCD_DELAY_CHAR
             delayMicroseconds(LCD_DELAY_CHAR);
           #endif
@@ -156,7 +156,7 @@ Documentation, Forums and more information available at http://www.brewtroller.c
       
         int i = 0;
         while (sText[i] != 0)  {
-          _lcd->print(sText[i++]);
+          _lcd->write(sText[i++]);
           #ifdef LCD_DELAY_CHAR
             delayMicroseconds(LCD_DELAY_CHAR);
           #endif
@@ -164,7 +164,7 @@ Documentation, Forums and more information available at http://www.brewtroller.c
         
         if (strlen(sText) < length) {
           for (byte i=0; i < length-strlen(sText) ; i++) {
-            _lcd->print(pad);
+            _lcd->write(pad);
             #ifdef LCD_DELAY_CHAR
               delayMicroseconds(LCD_DELAY_CHAR);
             #endif
