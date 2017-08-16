@@ -75,6 +75,11 @@ void loadSetup() {
     coolMaxOn[zone] = EEPROM.read(416 + zone);
 
     //********************************************************************************
+    // Manual control set for this zone (448 - 479)
+    //********************************************************************************
+    coolMaxOn[zone] = EEPROM.read(448 + zone);
+
+    //********************************************************************************
     // Setpoints: 2 Bytes per zone (640-703)
     //********************************************************************************
     setpoint[zone] = EEPROMreadInt(640 + zone * 2);
@@ -153,6 +158,14 @@ void setCoolMinOff(byte zone, byte value) {
 void setCoolMaxOn(byte zone, byte value) {
   coolMaxOn[zone] = value;
   EEPROM.write(416 + zone, value);
+}
+
+//********************************************************************************
+// Manual control set for this zone (448 - 479)
+//********************************************************************************
+void setManualControl(byte zone, byte value) {
+  manualControl[zone] = value;
+  EEPROM.write(448 + zone, value);
 }
 
 //*****************************************************************************************************************************

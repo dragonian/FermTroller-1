@@ -78,6 +78,7 @@ extern LCDI2C LCD;
 extern unsigned long vlvConfig[NUM_VLVCFGS], actHeats, actCools;
 extern boolean buzzStatus;
 extern byte alarmStatus[NUM_ZONES];
+extern boolean manualControl[NUM_ZONES];
 extern unsigned long coolTime[NUM_ZONES];
 extern byte coolMinOn[NUM_ZONES], coolMinOff[NUM_ZONES]; //Minimum On/Off time for coolOutput in minutes
 extern byte coolMaxOn[NUM_ZONES]; // Maximum time for coolOutput

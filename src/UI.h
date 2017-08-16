@@ -17,6 +17,10 @@ void adjustLCD();
 
 void assignSensor();
 void displayAssignSensorTemp(int sensor);
+
+void uiManual();
+void cfgManual(byte zone, char sTitle[]);
+
 void cfgOutputs();
 void cfgOutput(byte zone, char sTitle[]);
 

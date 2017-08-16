@@ -104,6 +104,7 @@ int temp[NUM_ZONES];
 unsigned long vlvConfig[NUM_VLVCFGS], actHeats, actCools;
 boolean buzzStatus;
 byte alarmStatus[NUM_ZONES];
+boolean manualControl[NUM_ZONES];
 unsigned long coolTime[NUM_ZONES];
 byte coolMinOn[NUM_ZONES], coolMinOff[NUM_ZONES]; //Minimum On/Off time for coolOutput in minutes
 byte coolMaxOn[NUM_ZONES]; // Maximum time for coolOutput in 30 second increments

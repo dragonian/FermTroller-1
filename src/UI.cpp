@@ -407,16 +407,18 @@ void menuSetup() {
     setupMenu.setItem_P(PSTR("Display"), 3);
   #endif
   setupMenu.setItem_P(PSTR("Temperature Sensors"), 0);
-  setupMenu.setItem_P(PSTR("Outputs"), 1);
-  setupMenu.setItem_P(INIT_EEPROM, 2);
+  setupMenu.setItem_P(PSTR("Manual Control"), 1); 
+  setupMenu.setItem_P(PSTR("Outputs"), 2);
+  setupMenu.setItem_P(INIT_EEPROM, 3);
 
   setupMenu.setItem_P(EXIT, 255);
   
   while(1) {
     byte lastOption = scrollMenu("System Setup", &setupMenu);
     if (lastOption == 0) assignSensor();
-    else if (lastOption == 1) cfgOutputs();
-    else if (lastOption == 2) {
+    else if (lastOption == 1) uiManual();
+    else if (lastOption == 2) cfgOutputs();
+    else if (lastOption == 3) {
       LCD.clear();
       LCD.print_P(0, 0, PSTR("Reset Configuration?"));
       if (confirmChoice(INIT_EEPROM, 3)) UIinitEEPROM();
@@ -513,6 +515,64 @@ void displayAssignSensorTemp(int sensor) {
   }
 }
 
+void uiManual() {
+  menu manualMenu(3, NUM_ZONES + 1);
+  
+  for (byte zone = 0; zone < NUM_ZONES; zone++) {
+    manualMenu.setItem_P(ZONE, zone);
+    itoa(zone + 1, buf, 10);
+    manualMenu.appendItem(buf, zone);
+  }
+  manualMenu.setItem_P(EXIT, 255);
+
+  while(1) {    
+    byte zone = scrollMenu("Manual Settings", &manualMenu);
+    if (zone < NUM_ZONES) cfgManual(zone, manualMenu.getSelectedRow(buf));
+    else return;
+    fermCore();
+  } 
+}
+
+void cfgManual(byte zone, char sTitle[]) {
+  menu outputMenu(3, 5);
+  while(1) { 
+    outputMenu.setItem_P(PSTR("Manual Control:"), 2);
+    if (manualControl[zone])
+      outputMenu.appendItem("On", 2);
+    else
+      outputMenu.appendItem("Off", 2);  
+    
+    outputMenu.setItem_P(PSTR("On Time: "), 3);
+    byte hours = coolMinOn[zone] / 60;
+    outputMenu.appendItem(itoa(hours, buf, 10), 3);
+    outputMenu.appendItem(":", 3);
+    byte mins = coolMinOn[zone] - hours * 60;
+    itoa(mins, buf, 10);
+    strLPad(buf, 2, '0');
+    outputMenu.appendItem(buf, 3);
+    
+    outputMenu.setItem_P(PSTR("Off Time: "), 4);
+    hours = coolMinOff[zone] / 60;
+    outputMenu.appendItem(itoa(hours, buf, 10), 4);
+    outputMenu.appendItem(":", 4);
+    mins = coolMinOff[zone] - hours * 60;
+    itoa(mins, buf, 10);
+    strLPad(buf, 2, '0');
+    outputMenu.appendItem(buf, 4);
+
+    outputMenu.setItem_P(EXIT, 255);
+ 
+    byte lastOption = scrollMenu(sTitle, &outputMenu);
+    char hTitle[21];
+    strcpy(hTitle, sTitle);
+
+    if (lastOption == 2) setManualControl(zone, manualControl[zone] ? 0 : 1);
+    else if (lastOption == 3) setCoolMinOn(zone, getTimerValue(PSTR("Min Cool On"), coolMinOn[zone], 4));
+    else if (lastOption == 4) setCoolMinOff(zone, getTimerValue(PSTR("Min Cool Off"), coolMinOff[zone], 4));
+    else return;
+    fermCore();
+  } 
+}
 
 void cfgOutputs() {
   menu outputsMenu(3, NUM_ZONES + 2);
