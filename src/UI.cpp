@@ -536,29 +536,29 @@ void uiManual() {
 void cfgManual(byte zone, char sTitle[]) {
   menu outputMenu(3, 5);
   while(1) { 
-    outputMenu.setItem_P(PSTR("Manual Control:"), 2);
+    outputMenu.setItem_P(PSTR("Manual Control:"), 1);
     if (manualControl[zone])
-      outputMenu.appendItem("On", 2);
+      outputMenu.appendItem("On", 1);
     else
-      outputMenu.appendItem("Off", 2);  
+      outputMenu.appendItem("Off", 1);  
     
-    outputMenu.setItem_P(PSTR("On Time: "), 3);
+    outputMenu.setItem_P(PSTR("On Time: "), 2);
     byte hours = coolMinOn[zone] / 60;
-    outputMenu.appendItem(itoa(hours, buf, 10), 3);
-    outputMenu.appendItem(":", 3);
+    outputMenu.appendItem(itoa(hours, buf, 10), 2);
+    outputMenu.appendItem(":", 2);
     byte mins = coolMinOn[zone] - hours * 60;
     itoa(mins, buf, 10);
     strLPad(buf, 2, '0');
-    outputMenu.appendItem(buf, 3);
+    outputMenu.appendItem(buf, 2);
     
-    outputMenu.setItem_P(PSTR("Off Time: "), 4);
+    outputMenu.setItem_P(PSTR("Off Time: "), 3);
     hours = coolMinOff[zone] / 60;
-    outputMenu.appendItem(itoa(hours, buf, 10), 4);
-    outputMenu.appendItem(":", 4);
+    outputMenu.appendItem(itoa(hours, buf, 10), 3);
+    outputMenu.appendItem(":", 3);
     mins = coolMinOff[zone] - hours * 60;
     itoa(mins, buf, 10);
     strLPad(buf, 2, '0');
-    outputMenu.appendItem(buf, 4);
+    outputMenu.appendItem(buf, 3);
 
     outputMenu.setItem_P(EXIT, 255);
  
@@ -566,9 +566,9 @@ void cfgManual(byte zone, char sTitle[]) {
     char hTitle[21];
     strcpy(hTitle, sTitle);
 
-    if (lastOption == 2) setManualControl(zone, manualControl[zone] ? 0 : 1);
-    else if (lastOption == 3) setCoolMinOn(zone, getTimerValue(PSTR("Min Cool On"), coolMinOn[zone], 4));
-    else if (lastOption == 4) setCoolMinOff(zone, getTimerValue(PSTR("Min Cool Off"), coolMinOff[zone], 4));
+    if (lastOption == 1) setManualControl(zone, manualControl[zone] ? 0 : 1);
+    else if (lastOption == 2) setCoolMinOn(zone, getTimerValue(PSTR("Min Cool On"), coolMinOn[zone], 4));
+    else if (lastOption == 3) setCoolMinOff(zone, getTimerValue(PSTR("Min Cool Off"), coolMinOff[zone], 4));
     else return;
     fermCore();
   } 
