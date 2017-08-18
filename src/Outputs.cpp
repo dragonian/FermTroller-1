@@ -80,74 +80,105 @@ void resetOutputs() {
   updateValves();
 }
 
+void processCoolingMaxTime(byte zone)  {
+  unsigned long now = millis();
+  if (now < coolTime[zone]) coolTime[zone] = 0; //Timer overflow occurred
+  if (now - coolTime[zone] >= (unsigned long) coolMaxOn[zone] * 60000) {
+    zonePwr[zone] = 0; //Turn off cool
+    coolTime[zone] = now; //Set timer for minimum off period
+  }
+}
+
+void processCoolingMinTime(byte zone)  {
+  unsigned long now = millis();
+  if (now < coolTime[zone]) coolTime[zone] = 0; //Timer overflow occurred
+  if (now - coolTime[zone] >= (unsigned long) coolMinOn[zone] * 60000) {
+    zonePwr[zone] = 0; //Turn off cool
+    coolTime[zone] = now; //Set timer for minimum off period
+  }
+}
+
+void processTempTooWarm(byte zone)  {
+  //Check for minimum cool off period
+  unsigned long now = millis();
+  if (now < coolTime[zone]) coolTime[zone] = 0; //Timer overflow occurred
+  if (now - coolTime[zone] >= (unsigned long) coolMinOff[zone] * 60000) {
+    zonePwr[zone] = -100; //Cool On
+    coolTime[zone] = now; //Set timer for minimum on period
+  }
+}
+
+void processTempTooCold(byte zone)  {
+  zonePwr[zone] = 100;  //Heat On
+}
+
+void processManualControl(byte zone) {
+  //Output is on - are we done, with minimum time?
+  if(zonePwr[zone] < 0 ) 
+    processCoolingMinTime(zone);
+  // otherwise check for min off period, and turn output on
+  else
+    processTempTooWarm(zone);
+}
+
+void processAlarms(byte zone) {
+  // Check for alarms
+  if (bitRead(alarmStatus[zone], ALARM_STATUS_TSENSOR)) 
+    eventHandler(EVENT_NALARM_TSENSOR, zone); //Clear TSENSOR Alarm
+  
+  if (temp[zone] - setpoint[zone] >= alarmThresh[zone] * 10)
+  {
+    if (!bitRead(alarmStatus[zone], ALARM_STATUS_TEMPHOT))
+      eventHandler(EVENT_ALARM_TEMPHOT, zone);
+  }
+  else if (bitRead(alarmStatus[zone], ALARM_STATUS_TEMPHOT))
+    eventHandler(EVENT_NALARM_TEMPHOT, zone); //Clear TEMPHOT Alarm
+
+  if (setpoint[zone] - temp[zone] >= alarmThresh[zone] * 10)
+  {
+    if (!bitRead(alarmStatus[zone], ALARM_STATUS_TEMPCOLD))
+      eventHandler(EVENT_ALARM_TEMPCOLD, zone);
+  }
+  else if (bitRead(alarmStatus[zone], ALARM_STATUS_TEMPCOLD))
+    eventHandler(EVENT_NALARM_TEMPCOLD, zone); //Clear TEMPCOLD Alarm
+}
+
 void processOutputs() {
   for (byte zone = 0; zone < NUM_ZONES; zone++) {
-    if (setpoint[zone] == NO_SETPOINT) {
+    if (manualControl[zone])
+      processManualControl(zone);
+    else if (setpoint[zone] == NO_SETPOINT) {
       zonePwr[zone] = 0;
       eventHandler(EVENT_NALARM_TEMPHOT, zone); //Clear TEMPHOT Alarm
       eventHandler(EVENT_NALARM_TEMPCOLD, zone); //Clear TEMPCOLD Alarm
       eventHandler(EVENT_NALARM_TSENSOR, zone); //Clear TSENSOR Alarm
     }
-    else if (temp[zone] == BAD_TEMP && !bitSet(alarmStatus[zone], ALARM_STATUS_TSENSOR)) {
+    else if (temp[zone] == BAD_TEMP && !bitSet(alarmStatus[zone], ALARM_STATUS_TSENSOR) ) {
       eventHandler(EVENT_ALARM_TSENSOR, zone);
       zonePwr[zone] = 0;
     }
     else
     {
-      // Check for alarms
-      if (bitRead(alarmStatus[zone], ALARM_STATUS_TSENSOR)) eventHandler(EVENT_NALARM_TSENSOR, zone); //Clear TSENSOR Alarm
-      
-      if (temp[zone] - setpoint[zone] >= alarmThresh[zone] * 10)
-      {
-       if (!bitRead(alarmStatus[zone], ALARM_STATUS_TEMPHOT)) eventHandler(EVENT_ALARM_TEMPHOT, zone);
-      }
-      else if (bitRead(alarmStatus[zone], ALARM_STATUS_TEMPHOT)) eventHandler(EVENT_NALARM_TEMPHOT, zone); //Clear TEMPHOT Alarm
-  
-      if (setpoint[zone] - temp[zone] >= alarmThresh[zone] * 10)
-      {
-       if (!bitRead(alarmStatus[zone], ALARM_STATUS_TEMPCOLD)) eventHandler(EVENT_ALARM_TEMPCOLD, zone);
-      }
-      else if (bitRead(alarmStatus[zone], ALARM_STATUS_TEMPCOLD)) eventHandler(EVENT_NALARM_TEMPCOLD, zone); //Clear TEMPCOLD Alarm
+      processAlarms(zone);
       
       // check for output on & off
       if (zonePwr[zone] > 0 && temp[zone] >= setpoint[zone]) zonePwr[zone] = 0; //Turn off heat
 
       // If we're cooling, and it's over the max time, we need to stop
       else if(zonePwr[zone] < 0 && coolMaxOn[zone] != 0)
-      {
-       unsigned long now = millis();
-       if (now < coolTime[zone]) coolTime[zone] = 0; //Timer overflow occurred
-       if (now - coolTime[zone] >= (unsigned long) coolMaxOn[zone] * 60000) {
-        zonePwr[zone] = 0; //Turn off cool
-        coolTime[zone] = now; //Set timer for minimum off period
-       }
-      }
+        processCoolingMaxTime(zone);
 
       //If we're cooling, are we done, with temp and minimum time?
-      else if(zonePwr[zone] < 0 && temp[zone] <= setpoint[zone])
-      {
-        //Check for minimum cool on period
-        unsigned long now = millis();
-        if (now < coolTime[zone]) coolTime[zone] = 0; //Timer overflow occurred
-        if (now - coolTime[zone] >= (unsigned long) coolMinOn[zone] * 60000) {
-          zonePwr[zone] = 0; //Turn off cool
-          coolTime[zone] = now; //Set timer for minimum off period
-        }
-      }
+      else if(zonePwr[zone] < 0 && temp[zone] <= setpoint[zone] ) 
+        processCoolingMinTime(zone);
       
       // The temp is too warm, should we turn cool on?
       if (temp[zone] >= setpoint[zone] + (int)hysteresis[zone] * 10)
-      {
-        //Check for minimum cool off period
-        unsigned long now = millis();
-        if (now < coolTime[zone]) coolTime[zone] = 0; //Timer overflow occurred
-        if (now - coolTime[zone] >= (unsigned long) coolMinOff[zone] * 60000) {
-          zonePwr[zone] = -100; //Cool On
-          coolTime[zone] = now; //Set timer for minimum on period
-        }
-      }
+        processTempTooWarm(zone);
 
-      if (temp[zone] <= setpoint[zone] - (int)hysteresis[zone] * 10) zonePwr[zone] = 100;  //Heat On
+      // The temp is too cold, turn heat on?
+      if (temp[zone] <= setpoint[zone] - (int)hysteresis[zone] * 10)
+        processTempTooCold(zone); 
     }
     
     if (zonePwr[zone] < 1) bitClear(actHeats, zone); else bitSet(actHeats, zone);
