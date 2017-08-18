@@ -595,7 +595,7 @@ void cfgOutputs() {
 }
 
 void cfgOutput(byte zone, char sTitle[]) {
-  menu outputMenu(3, 5);
+  menu outputMenu(3, 6);
   while(1) { 
     outputMenu.setItem_P(PSTR("Heat Output Profile"), 2);
     outputMenu.setItem_P(PSTR("Cool Output Profile"), 3);
